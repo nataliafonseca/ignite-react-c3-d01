@@ -32,19 +32,19 @@ interface PostProps {
   post: Post;
 }
 
-export default function Post({ post }: PostProps) {
+export default function Post({ post }: PostProps): JSX.Element {
   const { isFallback } = useRouter();
 
   if (isFallback) {
-    return (
-      <h1>Carregando...</h1>
-    )
+    return <h1>Carregando...</h1>;
   }
 
-    function getReadingTime() {
-    const content = post.data.content.reduce((words, content) => {
-      words += content.heading + ' ';
-      words += RichText.asText(content.body);
+  function getReadingTime(): number {
+    const content = post.data.content.reduce((words, postContent) => {
+      // eslint-disable-next-line no-param-reassign
+      words += `${postContent.heading} `;
+      // eslint-disable-next-line no-param-reassign
+      words += RichText.asText(postContent.body);
       return words;
     }, '');
 
@@ -79,10 +79,11 @@ export default function Post({ post }: PostProps) {
             <div className={styles.session} key={session.heading}>
               <h2>{session.heading}</h2>
               <div
-                  dangerouslySetInnerHTML={{
-                    __html: RichText.asHtml(session.body),
-                  }}
-                />
+                // eslint-disable-next-line react/no-danger
+                dangerouslySetInnerHTML={{
+                  __html: RichText.asHtml(session.body),
+                }}
+              />
             </div>
           ))}
         </div>
@@ -98,7 +99,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     { pageSize: 2, fetch: ['posts.uid'] }
   );
 
-  const paths = posts.results.map(post => ({ params: { slug: post.uid }}));
+  const paths = posts.results.map(post => ({ params: { slug: post.uid } }));
 
   return {
     paths,
@@ -110,7 +111,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const { slug } = params;
 
   const prismic = getPrismicClient();
-  const response = await prismic.getByUID('post', String(slug), {});  
+  const response = await prismic.getByUID('post', String(slug), {});
 
   return {
     props: { post: response },

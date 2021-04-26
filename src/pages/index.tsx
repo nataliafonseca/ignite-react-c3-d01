@@ -1,13 +1,13 @@
 import Prismic from '@prismicio/client';
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
+import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useState } from 'react';
 import { FiCalendar, FiUser } from 'react-icons/fi';
 import { getPrismicClient } from '../services/prismic';
 import styles from './home.module.scss';
-import { GetStaticProps } from 'next';
 
 interface Post {
   uid?: string;
@@ -28,11 +28,11 @@ interface HomeProps {
   postsPagination: PostPagination;
 }
 
-export default function Home({ postsPagination }: HomeProps) {
+export default function Home({ postsPagination }: HomeProps): JSX.Element {
   const [posts, setPosts] = useState<Post[]>(postsPagination.results);
   const [nextPage, setNextPage] = useState<string>(postsPagination.next_page);
 
-  async function loadNextPage() {
+  async function loadNextPage(): Promise<void> {
     const response = await fetch(postsPagination.next_page);
     const { next_page, results } = await response.json();
     setPosts([...posts, ...results]);
